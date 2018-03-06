@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false}));
 
 // start app
 app.listen(serverConfig.port, (err) => {
-  if (!error) {
+  if (!err) {
     console.log(`Server is running on port ${serverConfig.port}.`);
   }
 });
