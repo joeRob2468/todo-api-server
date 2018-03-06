@@ -1,0 +1,12 @@
+{
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "emcaVersion": 6,
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": 2  
+  }
+}
