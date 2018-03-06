@@ -1,0 +1,10 @@
+{
+  "name": "todo-api-server",
+  "version": "1.0.0",
+  "description": "A simple RESTful server for a react native todo app.",
+  "main": "index.js",
+  "repository": "git@github.com:joeRob2468/todo-api-server.git",
+  "author": "John Boyer",
+  "license": "MIT",
+  "private": true
+}
