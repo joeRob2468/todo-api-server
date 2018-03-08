@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import httpStatus from 'http-status';
+import APIError from '../util/APIError';
 
 /** 
  * Todo Schema
@@ -52,9 +54,12 @@ todoSchema.statics = {
 
       if (todo) {
         return todo;
-      } else {
-        // TODO: throw APIError
       }
+
+      throw new APIError({
+        message: 'Todo does not exist',
+        status: httpStatus.NOT_FOUND
+      });
     } catch (error) {
       throw error;
     }
