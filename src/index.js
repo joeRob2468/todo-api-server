@@ -1,6 +1,7 @@
 'use strict';
 
 import app from './resources/express';
+import mongoose from './resources/mongoose';
 
 // listen for requests
 app.listen(process.env.PORT, (err) => {
@@ -8,6 +9,8 @@ app.listen(process.env.PORT, (err) => {
     console.info(`Server is running on port ${process.env.PORT} (${process.env.NODE_ENV})`);
   }
 });
+
+mongoose.connect();
 
 /**
 * Exports express
