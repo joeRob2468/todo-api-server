@@ -4,19 +4,22 @@
   "description": "A simple RESTful server for a react native todo app.",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js --exec babel-node",
-    "build": "babel src -d dist",
-    "serve": "node dist/index.js"
+    "start": "nodemon src/index.js --exec \"node --require 'dotenv/config' --require 'babel-register'\"",
+    "build": "babel src -d dist --require dotenv/config",
+    "serve": "node --require 'dotenv/config' --require 'babel-register' dist/index.js"
   },
   "repository": "git@github.com:joeRob2468/todo-api-server.git",
   "author": "John Boyer",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "babel-plugin-lodash": "^3.3.2",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
     "eslint": "^4.18.2",
     "express": "^4.16.2",
+    "lodash": "^4.17.5",
     "mongoose": "^5.0.9"
   },
   "devDependencies": {
