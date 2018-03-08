@@ -4,6 +4,7 @@
   "description": "A simple RESTful server for a react native todo app.",
   "main": "src/index.js",
   "scripts": {
+    "prestart": "yarn docs",
     "start": "nodemon src/index.js --exec \"node --require 'dotenv-safe/config' --require 'babel-register'\"",
     "build": "babel src -d dist --require dotenv-safe/config",
     "serve": "node --require 'dotenv-safe/config' --require 'babel-register' dist/index.js",
@@ -13,12 +14,12 @@
   "author": "John Boyer",
   "license": "MIT",
   "apidoc": {
-    "title": "Todo API",
     "url": "localhost:3000/v1"
   },
   "private": true,
   "dependencies": {
     "apidoc": "^0.17.6",
+    "babel-eslint": "^8.2.2",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "dotenv-safe": "^5.0.1",

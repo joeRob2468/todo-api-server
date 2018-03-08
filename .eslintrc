@@ -2,8 +2,9 @@
   "env": {
     "node": true
   },
+  "parser": "babel-eslint",
   "parserOptions": {
-    "emcaVersion": 6,
+    "emcaVersion": 8,
     "sourceType": "module"
   },
   "rules": {
