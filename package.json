@@ -6,13 +6,19 @@
   "scripts": {
     "start": "nodemon src/index.js --exec \"node --require 'dotenv-safe/config' --require 'babel-register'\"",
     "build": "babel src -d dist --require dotenv-safe/config",
-    "serve": "node --require 'dotenv-safe/config' --require 'babel-register' dist/index.js"
+    "serve": "node --require 'dotenv-safe/config' --require 'babel-register' dist/index.js",
+    "docs": "apidoc -i src/ -o docs/"
   },
   "repository": "git@github.com:joeRob2468/todo-api-server.git",
   "author": "John Boyer",
   "license": "MIT",
+  "apidoc": {
+    "title": "Todo API",
+    "url": "localhost:3000/v1"
+  },
   "private": true,
   "dependencies": {
+    "apidoc": "^0.17.6",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "dotenv-safe": "^5.0.1",
