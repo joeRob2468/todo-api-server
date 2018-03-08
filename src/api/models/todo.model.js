@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
-import APIError from '../util/APIError';
+import APIError from '../utils/APIError';
 
 /** 
  * Todo Schema
