@@ -8,7 +8,7 @@ const router = express.Router();
 /**
  * Load user when API with todoId route parameter is hit
  */
-router.param('todoId', controller.load);
+//router.param('todoId', controller.load);
 
 router
   .route('/')
