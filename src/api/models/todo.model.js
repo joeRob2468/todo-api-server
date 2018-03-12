@@ -34,6 +34,19 @@ const todoSchema = new mongoose.Schema({
  * Methods
  */
 
+todoSchema.method({
+  transform() {
+    const transformed = {};
+    const fields = ['id', 'title', 'description', 'dueAt'];
+
+    fields.forEach((field) => {
+      transformed[field] = this[field];
+    });
+
+    return transformed;
+  }
+});
+
 /**
 * Statics
 */
