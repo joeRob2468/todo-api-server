@@ -25,6 +25,7 @@
     "dotenv-safe": "^5.0.1",
     "eslint": "^4.18.2",
     "express": "^4.16.2",
+    "express-validation": "^1.0.2",
     "http-status": "^1.0.1",
     "joi": "^13.1.2",
     "mongoose": "^5.0.9"
