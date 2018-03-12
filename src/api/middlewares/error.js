@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-//const expressValidation = require('express-validation');
+const expressValidation = require('express-validation');
 import APIError from '../utils/APIError';
 
 /**
@@ -31,16 +31,14 @@ exports.handler = handler;
 exports.converter = (err, req, res, next) => {
   let convertedError = err;
 
-  /* if (err instanceof expressValidation.ValidationError) {
+  if (err instanceof expressValidation.ValidationError) {
     convertedError = new APIError({
       message: 'Validation Error',
       errors: err.errors,
       status: err.status,
       stack: err.stack,
     });
-  } else */ 
-  
-  if (!(err instanceof APIError)) {
+  } else if (!(err instanceof APIError)) {
     convertedError = new APIError({
       message: err.message,
       status: err.status,
