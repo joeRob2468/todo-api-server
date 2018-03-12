@@ -1,7 +1,7 @@
 import express from 'express';
 import validate from 'express-validation';
-import controller from '../controllers/todo.controller';
-import * as rules from '../validations/todo.validation';
+import * as controller from '../../controllers/todo.controller';
+import * as rules from '../../validations/todo.validation';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router
   .route('/')
    /**
-   * @api {get} v1/todos List Todos
+   * @api {get} /todos List Todos
    * @apiDescription Get a list of todos
    * @apiVersion 1.0.0
    * @apiName ListTodos
@@ -25,3 +25,5 @@ router
    * @apiSuccess {Object[]} todos List of todos.
    */
   .get(validate(rules.list), controller.list);
+
+export default router;

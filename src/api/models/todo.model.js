@@ -86,4 +86,4 @@ todoSchema.statics = {
 /**
  * @typedef Todo
  */
-export default mongoose.Model('Todo', todoSchema);
+export default mongoose.model('Todo', todoSchema);

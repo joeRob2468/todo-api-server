@@ -1,4 +1,5 @@
 import express from 'express';
+import todoRoutes from './todo.route';
 
 const router = express.Router();
 
@@ -20,5 +21,7 @@ router.get('/status', (req, res) => res.send({status: 'OK'}));
  * GET v1/docs
  */
 router.use('/docs', express.static('docs'));
+
+router.use('/todos', todoRoutes);
 
 module.exports = router;
