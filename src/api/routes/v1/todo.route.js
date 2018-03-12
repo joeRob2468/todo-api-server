@@ -19,8 +19,8 @@ router
    * @apiName ListTodos
    * @apiGroup Todo
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Todos per page
+   * @apiParam  {Number{1-any}}         [page=1]     List page
+   * @apiParam  {Number{1-500}}      [perPage=100]  Todos per page
    *
    * @apiSuccess {Object[]} todos List of todos.
    */
