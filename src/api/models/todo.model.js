@@ -35,6 +35,10 @@ const todoSchema = new mongoose.Schema({
  */
 
 todoSchema.method({
+  /** 
+   * Transforms todo into a JSON friendly format
+   * @returns {Object} todo - a pure object version of todo
+   */
   transform() {
     const transformed = {};
     const fields = ['id', 'title', 'description', 'dueAt'];
