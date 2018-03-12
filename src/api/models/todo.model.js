@@ -72,7 +72,7 @@ todoSchema.statics = {
    * @param {number} limit - Limit number of todos to be returned.
    * @returns {Promise<Todo[]>}
    */
-  list({ page = 1, perPage = 10 /*, name, email, role */}) {
+  list({ page = 1, perPage = 100 /*, name, email, role */}) {
     // const options = omitBy({ name, email, role }, isNil);
     // limit by those fields. Requires lodash.
     return this.find(/* options */)
