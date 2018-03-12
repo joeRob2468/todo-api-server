@@ -36,6 +36,8 @@ router
    * @apiSuccess {String} title The task title
    * @apiSuccess {String} description The task description, or other notes related to the task
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
+   * 
+   * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
    */
   .post(validate(rules.create), controller.create);
 
@@ -50,8 +52,46 @@ router
    * @apiSuccess {String} title The task title
    * @apiSuccess {String} description The task description, or other notes related to the task
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
+   * 
+   * @apiError (Not Found 404) NotFound Todo does not exist
    */
   .get(controller.get)
+  /**
+   * @api {put} /:id Replace Todo
+   * @apiDescription Replace the entire todo document with a new one
+   * @apiGroup Todo
+   * 
+   * @apiParam {String} title The task title
+   * @apiParam {String} description The task description, or other notes related to the task
+   * @apiParam {Date} dueAt The timestamp by which the task must be completed
+   * 
+   * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} title The task title
+   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
+   * 
+   * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
+   * @apiError (Not Found 404) NotFound Todo does not exist
+   */
+  .put(validate(rules.replace), controller.replace)
+  /**
+   * @api {patch} /:id Update Todo
+   * @apiDescription Update the todo
+   * @apiGroup Todo
+   * 
+   * @apiParam {String} [title] The task title
+   * @apiParam {String} [description] The task description, or other notes related to the task
+   * @apiParam {Date} [dueAt] The timestamp by which the task must be completed
+   * 
+   * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} title The task title
+   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
+   * 
+   * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
+   * @apiError (Not Found 404) NotFound User does not exist
+   */
+  .patch(validate(rules.update), controller.update)
   /**
    * @api {delete} /:id Delete Todo
    * @apiDescription Delete a todo

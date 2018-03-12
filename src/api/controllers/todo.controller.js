@@ -29,6 +29,44 @@ export const get = async (req, res, next) => {
   }
 };
 
+/** 
+ * Replace a todo by ID
+ * @public
+ */
+export const replace = async (req, res, next) => {
+  try {
+    const todo = await Todo.get(req.params.id);
+    
+    // remove _id and assign the new object to newTodo.
+    // technically, it creates a new variable called _id, but we won't use that.
+    // this is an es6 replacement for lodash's omit.
+    const {_id, ...newTodo} = req.body;
+
+    await todo.update(newTodo, {override: true, upsert: true});
+    const savedTodo = await Todo.findById(todo._id);
+
+    res.json(savedTodo.transform());
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** 
+ * Update a todo by ID
+ * @public
+ */
+export const update = async (req, res, next) => {
+  try {
+    const todo = await Todo.get(req.params.id);
+    const updatedTodo = Object.assign(todo, req.body);
+
+    await updatedTodo.save();
+    res.json(updatedTodo.transform());
+  } catch (error) {
+    next(error);
+  }
+};
+
  /**
  * Get list of todos
  * @public
