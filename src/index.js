@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 import app from './resources/express';
 import mongoose from './resources/mongoose';
 
