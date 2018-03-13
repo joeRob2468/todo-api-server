@@ -9,9 +9,9 @@
     "dev": "nodemon src/index.js --exec \"node --require 'babel-register'\"",
     "build": "cross-env NODE_ENV=production babel src -d dist",
     "serve": "node --require 'babel-register' dist/index.js",
-    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --recursive src/api/tests",
-    "test:unit": "cross-env NODE_ENV=test mocha src/api/tests/unit",
-    "test:integration": "cross-env NODE_ENV=test mocha --timeout 20000 src/api/tests/integration",
+    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --recursive src/api/tests --require 'babel-register'",
+    "test:unit": "cross-env NODE_ENV=test mocha src/api/tests/unit --require 'babel-register'",
+    "test:integration": "cross-env NODE_ENV=test mocha --timeout 20000 src/api/tests/integration --require 'babel-register'",
     "docs": "apidoc -i src/ -o docs/"
   },
   "repository": "git@github.com:joeRob2468/todo-api-server.git",
@@ -24,6 +24,7 @@
   "dependencies": {
     "apidoc": "^0.17.6",
     "babel-eslint": "^8.2.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "cross-env": "^5.1.4",

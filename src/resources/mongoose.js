@@ -5,7 +5,11 @@ mongoose.Promise = global.Promise;
 
 // log when initial connection is made
 mongoose.connection.once('open', () => {
-  console.info(`Connected to Mongoose at ${process.env.MONGO_URI}`);
+  if (process.env.NODE_ENV == 'test') {
+    console.info(`Connected to Mongoose at ${process.env.MONGO_TEST_URI}`);
+  } else {
+    console.info(`Connected to Mongoose at ${process.env.MONGO_URI}`);
+  }
 });
 
 // exit application on error
@@ -35,9 +39,15 @@ if (process.env.NODE_ENV === 'development')
 */
 function connect() {
   // connect to mongoose
-  mongoose.connect(process.env.MONGO_URI, {
-    keepAlive: 1
-  });
+  if (process.env.NODE_ENV == 'test') {
+    mongoose.connect(process.env.MONGO_TEST_URI, {
+      keepAlive: 1
+    });
+  } else {
+    mongoose.connect(process.env.MONGO_URI, {
+      keepAlive: 1
+    });
+  }
   return mongoose.connection;
 }
 
