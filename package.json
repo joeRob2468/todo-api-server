@@ -35,7 +35,9 @@
     "http-status": "^1.0.1",
     "joi": "^13.1.2",
     "mongoose": "^5.0.9",
-    "pm2": "^2.10.1"
+    "morgan": "^1.9.0",
+    "pm2": "^2.10.1",
+    "winston": "^3.0.0-rc2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -1,6 +1,7 @@
 'use strict';
 
 import express from 'express';
+import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import error from '../api/middlewares/error';
@@ -11,6 +12,19 @@ import routes from '../api/routes/v1';
  * @public
 */
 const app = new express();
+
+// set logging format.
+// also log errors to separate stream
+app.use(morgan((process.env.NODE_ENV === 'production' ? 'combined' : 'dev'), {
+  skip: function(req, res) {
+    return res.statusCode < 400;
+  }, stream: process.stderr
+}));
+app.use(morgan((process.env.NODE_ENV === 'production' ? 'combined' : 'dev'), {
+  skip: function(req, res) {
+    return res.statusCode >= 400;
+  }, stream: process.stdout
+}));
 
 // parse body params and attach them to req.body
 app.use(bodyParser.json({ limit: process.env.BODY_LIMIT }));
