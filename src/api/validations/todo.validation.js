@@ -13,7 +13,7 @@ export const create = {
   body: {
     title: joi.string().required(),
     description: joi.string().required(),
-    dueAt: joi.date().timestamp().required()
+    dueAt: joi.date().required()
   }
 };
 
@@ -22,7 +22,7 @@ export const replace = {
   body: {
     title: joi.string().required(),
     description: joi.string().required(),
-    dueAt: joi.date().timestamp().required()
+    dueAt: joi.date().required()
   },
   params: {
     id: joi.string().regex(/^[a-fA-F0-9]{24}$/).required()
@@ -34,7 +34,7 @@ export const update = {
   body: {
     title: joi.string(),
     description: joi.string(),
-    dueAt: joi.date().timestamp()
+    dueAt: joi.date()
   },
   params: {
     id: joi.string().regex(/^[a-fA-F0-9]{24}$/).required()

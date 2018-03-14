@@ -26,7 +26,7 @@ async function format(todo) {
 describe('Todo API', async () => {
   let dbTodos;
   let todo;
-  const dueAt = new Date() + (2*60*60*1000); // 2 hours in the future
+  const dueAt = new Date(+new Date() + 2*60*60*1000).toISOString(); // 2 hours in the future, formatted as ISO-8601
 
   beforeEach(async () => {
     dbTodos = {
