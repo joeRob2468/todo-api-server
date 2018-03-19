@@ -68,7 +68,7 @@ todoSchema.statics = {
       if (mongoose.Types.ObjectId.isValid(id)) {
         todo = await this.findById(id).exec();
       }
-
+      
       if (todo) {
         return todo;
       }
