@@ -4,8 +4,10 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import passport from 'passport';
 import error from '../api/middlewares/error';
 import routes from '../api/routes/v1';
+import * as strategies from './passport';
 
 /** 
  * Express instance
@@ -35,6 +37,12 @@ app.use(cors());
 
 // mount api v1 routes
 app.use('/v1', routes);
+
+// enable authentication
+app.use(passport.initialize());
+passport.use('jwt', strategies.jwt);
+passport.use('facebook', strategies.facebook);
+passport.use('google', strategies.google);
 
 // if error is not an instanceOf APIError, convert it.
 app.use(error.converter);
