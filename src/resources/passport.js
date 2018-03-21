@@ -1,3 +1,5 @@
+require('dotenv-safe').config(); // make sure dotenv runs before anything else, just in case
+
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import BearerStrategy from 'passport-http-bearer';
 import * as authProviders from '../api/services/authProviders';
