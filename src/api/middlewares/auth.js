@@ -54,6 +54,6 @@ export const authorize = (roles = User.roles) => (req, res, next) => {
 };
 
 
-export const oauth = service => {
+export const oAuth = service => {
   return passport.authenticate(service, { session: false });
 };
