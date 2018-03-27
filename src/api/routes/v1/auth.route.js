@@ -13,7 +13,7 @@ const router = express.Router();
  * @apiPermission public
  * 
  * @apiParam {String} email User's email
- * @apiParam {String{6...128}} User's password
+ * @apiParam {String{6...128}} password User's password
  * 
  * @apiSuccess (Created 201) {String} token.tokenType Access Token's type
  * @apiSuccess (Created 201) {String} token.accessToken Authorization Token
@@ -88,6 +88,8 @@ router.route('/refresh-token')
  * @apiGroup Auth
  * @apiPermission public
  * 
+ * @apiParam {String} access_token Facebook's access_token
+ * 
  * @apiSuccess {String} tokenType Access Token's type
  * @apiSuccess {String} accessToken Authorization Token
  * @apiSuccess {String} refreshToken Token to get a new accessToken after expiration time
@@ -104,6 +106,8 @@ router.route('/facebook')
  * @apiDescription Login with google. Creates a new user if it does not exist
  * @apiGroup Auth
  * @apiPermission public
+ * 
+ * * @apiParam {String} access_token Google's access_token
  * 
  * @apiSuccess {String} tokenType Access Token's type
  * @apiSuccess {String} accessToken Authorization Token
