@@ -203,7 +203,7 @@ userSchema.statics = {
    * @returns {Error | APIError}
    */
   checkDuplicateEmail(error) {
-    if (error.name === 'MongoError' && error.code === 11000) {
+    if (error.code === 11000) {
       return new APIError({
         message: 'Validation Error',
         errors: [{
