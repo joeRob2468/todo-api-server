@@ -8,9 +8,9 @@ import APIError from '../utils/APIError';
 
 /** 
  * User Roles
+ * @public 
  */
-
-const roles = ['user', 'admin'];
+export const roles = ['user', 'admin'];
 
 /** 
  * User Schema
