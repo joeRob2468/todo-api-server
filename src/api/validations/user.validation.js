@@ -17,7 +17,7 @@ export const create = {
   body: {
     email: joi.string().email().required(),
     password: joi.string().min(6).max(128).required(),
-    name: joi.string.max(128),
+    name: joi.string().max(128),
     role: joi.string().valid(User.roles)
   }
 };
