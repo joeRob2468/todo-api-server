@@ -3,8 +3,8 @@ import passport from 'passport';
 import User from '../models/user.model';
 import APIError from '../utils/APIError';
 
-const ADMIN = 'admin';
-const LOGGED_USER = "_loggedUser";
+const ADMIN = 'admin'; // permission that requires a user to have the role of admin
+const LOGGED_USER = "_loggedUser"; // permission that requires a user to have the role of admin or to be retrieving their own information
 
 const handleJWT = (req, res, next, roles) => async (err, user, info) => {
   const error = err || info;

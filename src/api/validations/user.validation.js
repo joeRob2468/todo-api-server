@@ -2,7 +2,7 @@ import joi from 'joi';
 import User from '../models/user.model';
 
 // GET /v1/users
-export const listUsers = {
+export const list = {
   query: {
     skip: joi.number().min(1),
     limit: joi.number().min(1).max(100),
@@ -13,7 +13,7 @@ export const listUsers = {
 };
 
 // POST /v1/users
-export const createUser = {
+export const create = {
   body: {
     email: joi.string().email().required(),
     password: joi.string().min(6).max(128).required(),
@@ -23,7 +23,7 @@ export const createUser = {
 };
 
 // PUT /v1/users/:userId
-export const replaceUser = {
+export const replace = {
   body: {
     email: joi.string().email().required(),
     password: joi.string().min(6).max(128).required(),
@@ -36,7 +36,7 @@ export const replaceUser = {
 };
 
  // PATCH /v1/users/:userId
-export const updateUser = {
+export const update = {
   body: {
     email: joi.string().email(),
     password: joi.string().min(6).max(128),
