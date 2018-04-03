@@ -7,7 +7,7 @@ import sinon from 'sinon';
 import app from '../../../index';
 import User from '../../models/user.model';
 import RefreshToken from '../../models/refreshToken.model';
-import authProviders from '../../services/authProviders';
+import * as authProviders from '../../services/authProviders';
 
 const sandbox = sinon.createSandbox();
 
@@ -92,6 +92,197 @@ describe('Authentication API', () => {
           expect(field).to.deep.include('email');
           expect(location).to.be.equal('body');
           expect(messages).to.include('"email" must be a valid email');
+        });
+    });
+  });
+
+  describe('POST /v1/auth/login', () => {
+    it('should return an accessToken and a refreshToken when email and password matches', () => {
+      return request(app)
+        .post('/v1/auth/login')
+        .send(dbUser)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          delete dbUser.password;
+          expect(res.body.token).to.have.a.property('accessToken');
+          expect(res.body.token).to.have.a.property('refreshToken');
+          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.user).to.include(dbUser);
+        });
+    });
+
+    it('should report error when email and password are not provided', () => {
+      return request(app)
+        .post('/v1/auth/login')
+        .send({})
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+          expect(field).to.deep.include('email');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"email" is required');
+        });
+    });
+
+    it('should report error when email is not valid', () => {
+      user.email = 'this_is_not_an_email';
+      return request(app)
+        .post('/v1/auth/login')
+        .send(user)
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+          expect(field).to.deep.include('email');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"email" must be a valid email');
+        });
+    });
+
+    it('should report error when email and password don\'t match', () => {
+      dbUser.password = 'xxxxxx';
+      return request(app)
+        .post('/v1/auth/login')
+        .send(dbUser)
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          const { code, message } = res.body;
+          expect(code).to.be.equal(401);
+          expect(message).to.be.equal('Incorrect email or password');
+        });
+    });
+  });
+
+  describe('POST /v1/auth/facebook', () => {
+    it('should create a new user and return an accessToken when user does not exist', () => {
+      sandbox.stub(authProviders, 'facebook').callsFake(fakeOAuthRequest);
+      return request(app)
+        .post('/v1/auth/facebook')
+        .send({ access_token: '123' })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.token).to.have.a.property('accessToken');
+          expect(res.body.token).to.have.a.property('refreshToken');
+          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.user).to.be.an('object');
+        });
+    });
+
+    it('should return an accessToken when user already exists', async () => {
+      dbUser.email = 'test@test.com';
+      await User.create(dbUser);
+      sandbox.stub(authProviders, 'facebook').callsFake(fakeOAuthRequest);
+      return request(app)
+        .post('/v1/auth/facebook')
+        .send({ access_token: '123' })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.token).to.have.a.property('accessToken');
+          expect(res.body.token).to.have.a.property('refreshToken');
+          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.user).to.be.an('object');
+        });
+    });
+
+    it('should return error when access_token is not provided', () => {
+      return request(app)
+        .post('/v1/auth/facebook')
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+          expect(field).to.deep.include('access_token');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"access_token" is required');
+        });
+    });
+  });
+
+  describe('POST /v1/auth/google', () => {
+    it('should create a new user and return an accessToken when user does not exist', () => {
+      sandbox.stub(authProviders, 'google').callsFake(fakeOAuthRequest);
+      return request(app)
+        .post('/v1/auth/google')
+        .send({ access_token: '123' })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.token).to.have.a.property('accessToken');
+          expect(res.body.token).to.have.a.property('refreshToken');
+          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.user).to.be.an('object');
+        });
+    });
+    
+    it('should return an accessToken when user already exists', async () => {
+      dbUser.email = 'test@test.com';
+      await User.create(dbUser);
+      sandbox.stub(authProviders, 'google').callsFake(fakeOAuthRequest);
+      return request(app)
+        .post('/v1/auth/google')
+        .send({ access_token: '123' })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.token).to.have.a.property('accessToken');
+          expect(res.body.token).to.have.a.property('refreshToken');
+          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.user).to.be.an('object');
+        });
+    });
+
+    it('should return error when access_token is not provided', () => {
+      return request(app)
+        .post('/v1/auth/google')
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+          expect(field).to.deep.include('access_token');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"access_token" is required');
+        });
+    });
+  });
+
+  describe('POST /v1/auth/refresh-token', () => {
+    it('should return a new accessToken when refreshToken and email match', async() => {
+      await RefreshToken.create(refreshToken);
+      return request(app)
+        .post('/v1/auth/refresh-token')
+        .send({ email: dbUser.email, refreshToken: refreshToken.token })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.have.a.property('accessToken');
+          expect(res.body).to.have.a.property('refreshToken');
+          expect(res.body).to.have.a.property('expiresIn');
+        });
+    });
+
+    it('should report error when email and refreshToken don\'t match', async () => {
+      await RefreshToken.create(refreshToken);
+      return request(app)
+        .post('/v1/auth/refresh-token')
+        .send({ email: user.email, refreshToken: refreshToken.token })
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          const { code, message } = res.body;
+          expect(code).to.be.equal(401);
+          expect(message).to.be.equal('Incorrect email or refreshToken'); 
+        });
+    });
+
+    it('should report error when email and refreshToken are not provided', () => {
+      return request(app)
+        .post('/v1/auth/refresh-token')
+        .send({})
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field: field1, location: location1, messages: messages1 } = res.body.errors[0];
+          const { field: field2, location: location2, messages: messages2 } = res.body.errors[1];
+
+          expect(field1).to.deep.include('email');
+          expect(location1).to.be.equal('body');
+          expect(messages1).to.include('"email" is required');
+
+          expect(field2).to.deep.include('refreshToken');
+          expect(location2).to.be.equal('body');
+          expect(messages2).to.include('"refreshToken" is required');
         });
     });
   });
