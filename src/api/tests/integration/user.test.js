@@ -85,5 +85,81 @@ describe('Users API', async () => {
           expect(res.body).to.include(admin);
         });
     });
+
+    it('should create a new user and set default role to "user"', () => {
+      return request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(user)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          expect(res.body.role).to.be.equal('user');
+        });
+    });
+
+    it('should report error when email already exists', () => {
+      user.email = dbUsers.first.email;
+
+      return request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(user)
+        .expect(httpStatus.CONFLICT)
+        .then((res) => {
+          const { field, location, message } = res.body.errors[0];
+          expect(field).to.be.equal('email');
+          expect(location).to.be.equal('body');
+          expect(message).to.include('"email" already exists');
+        });
+    });
+
+    it('should report error when password length is less than 6', () => {
+      user.password = '12345';
+
+      return request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(user)
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+          expect(field).to.deep.include('password');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"password" length must be at least 6 characters long');
+        });
+    });
+
+    it('should report error when logged user is not an admin', () => {
+      return request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(user)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
+        });
+    });
+  });
+
+  describe('GET /v1/users', () => {
+    it('should get all users', () => {
+      return request(app)
+        .get('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          const first = await format(dbUsers.first);
+          const second = await format(dbUsers.second);
+
+          // must convert dates to Date objects before comparison
+          res.body[0].createdAt = new Date(res.body[0].createdAt);
+          res.body[1].createdAt = new Date(res.body[1].createdAt);
+
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.lengthOf(2);
+          expect(res.body).to.deep.include.members([first, second]);
+        });
+    });
   });
 });

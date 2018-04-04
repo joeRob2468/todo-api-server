@@ -186,7 +186,7 @@ userSchema.statics = {
     const options = { name, email, role };
     // remove undefined properties from options
     Object.keys(options).forEach((key) => {
-      if (options[key] === null) delete options[key];
+      if (options[key] === null || options[key] === undefined) delete options[key];
     });
 
     return this.find(options)
