@@ -2,6 +2,8 @@
 
 require('dotenv-safe').config();
 
+// make bluebird default promise
+Promise = require('bluebird'); // eslint-disable-line no-global-assign
 import app from './resources/express';
 import mongoose from './resources/mongoose';
 import logger from './resources/logger';
