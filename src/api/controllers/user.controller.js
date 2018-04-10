@@ -57,8 +57,9 @@ export const replace = async (req, res, next) => {
     const omitRole = user.role !== 'admin' ? 'role' : '';
     const { [omitRole]: role, _id, ...newUserObject } = newUser.toObject();
     
-    await user.update(newUserObject, { override: true, upsert: true});
+    const updated = await user.update(newUserObject, { override: true, upsert: true});
     const savedUser = await User.findById(user._id);
+    res.json(savedUser.transform());
   } catch (error) {
     next(User.checkDuplicateEmail(error));
   }
@@ -74,10 +75,11 @@ export const update = async (req, res, next) => {
     // remove _id from new user, and remove role if the logged-in user is not an admin. 
     // prevents non-admin users from making themselves admins (security risk).
     const omitRole = user.role !== 'admin' ? 'role' : '';
-    const { [omitRole]: role, ...userData } = req.body;
-    const updatedUser = { ...user, ...userData }; // similar to Object.assign - merges the two objects together. 
 
-    const savedUser = await updatedUser.save();
+    const { [omitRole]: role, ...userData } = req.body;
+    Object.assign(user, userData);
+
+    const savedUser = await user.save();
     res.json(savedUser.transform());
   } catch (error) {
     next(User.checkDuplicateEmail(error));
