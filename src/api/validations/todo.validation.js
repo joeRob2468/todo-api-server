@@ -11,8 +11,10 @@ export const list = {
 // POST /v1/todos
 export const create = {
   body: {
+    user: joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
     title: joi.string().required(),
-    description: joi.string().required(),
+    description: joi.string(),
+    completed: joi.boolean(),
     dueAt: joi.date().required()
   }
 };
@@ -20,8 +22,10 @@ export const create = {
 // PUT /v1/todos/:id
 export const replace = {
   body: {
+    user: joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
     title: joi.string().required(),
-    description: joi.string().required(),
+    description: joi.string(),
+    completed: joi.boolean(),
     dueAt: joi.date().required()
   },
   params: {
@@ -32,8 +36,10 @@ export const replace = {
 // PATCH /v1/todos/:id
 export const update = {
   body: {
+    user: joi.string().regex(/^[a-fA-F0-9]{24}$/),
     title: joi.string(),
     description: joi.string(),
+    completed: joi.boolean(),
     dueAt: joi.date()
   },
   params: {

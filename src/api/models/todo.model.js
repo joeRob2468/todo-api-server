@@ -7,6 +7,11 @@ import APIError from '../utils/APIError';
  * @private
  */
 const todoSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   title: {
     type: String,
     required: true,
@@ -14,8 +19,11 @@ const todoSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: false,
     trim: true
+  },
+  completed: {
+    type: Boolean,
+    default: false
   },
   dueAt: {
     type: Date,
@@ -41,11 +49,13 @@ todoSchema.method({
    */
   transform() {
     const transformed = {};
-    const fields = ['id', 'title', 'description', 'dueAt'];
+    const fields = ['id', 'user', 'title', 'description', 'completed', 'dueAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    transformed.user = transformed.user.toString();
 
     return transformed;
   }

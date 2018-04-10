@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import app from '../../../index';
 import Todo from '../../models/todo.model';
+import User from '../../models/user.model';
 
 /**
  * root level hooks
@@ -25,18 +26,41 @@ async function format(todo) {
 }
 
 describe('Todo API', async () => {
+  let user;
+  let admin;
+  let userAccessToken;
+  let adminAccessToken;
+
+  const password = '1234567';
+  const passwordHashed = await bcrypt.hash(password, 1);
+
   let dbTodos;
   let todo;
   const dueAt = new Date(+new Date() + 2*60*60*1000).toISOString(); // 2 hours in the future, formatted as ISO-8601
 
   beforeEach(async () => {
+    admin = {
+      email: 'adminuser@example.com',
+      password: passwordHashed,
+      name: 'Admin User',
+      role: 'admin'
+    };
+
+    user = {
+      email: 'testuser@example.com',
+      password: passwordHashed,
+      name: 'Test User'
+    };
+
     dbTodos = {
       first: {
+        user: '',
         title: 'Finalize Draft',
         description: 'Submit to Mindy',
         dueAt: dueAt
       },
       second: {
+        user: '',
         title: 'Make Food',
         description: 'Chicken and potatoes',
         dueAt: dueAt
@@ -44,17 +68,31 @@ describe('Todo API', async () => {
     };
 
     todo = {
+      user: '',
       title: 'Write Tests',
       description: 'Make them easy',
       dueAt: dueAt
     };
+
+    await User.remove({});
+    await User.insertMany([user, admin]);
+
+    user.password = password;
+    admin.password = password;
+    userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
+    adminAccessToken = (await User.findAndGenerateToken(admin)).accessToken;
+
+    dbTodos.first.user = (await User.findOne({ email: user.email }))._id;
+    dbTodos.second.user = (await User.findOne({ email: admin.email }))._id;
+    todo.user = (await User.findOne({ email: user.email }))._id.toString();
 
     await Todo.remove({});
     await Todo.insertMany([dbTodos.first, dbTodos.second]);
   });
 
   describe('POST /v1/todos', () => {
-    it('should create a new todo when request is ok', () => {
+    it('should create a new todo when request is ok', async () => {
+      
       return request(app)
         .post('/v1/todos')
         .send(todo)
@@ -76,21 +114,6 @@ describe('Todo API', async () => {
           expect(field).to.deep.include('title');
           expect(location).to.be.equal('body');
           expect(messages).to.include('"title" is required');
-        });
-    });
-
-    it('should report error when description is not provided', () => {
-      delete todo.description;
-
-      return request(app)
-        .post('/v1/todos')
-        .send(todo)
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          const { field, location, messages } = res.body.errors[0];
-          expect(field).to.deep.include('description');
-          expect(location).to.be.equal('body');
-          expect(messages).to.include('"description" is required');
         });
     });
 
@@ -158,6 +181,7 @@ describe('Todo API', async () => {
   describe('GET /v1/todos/:id', () => {
     it('should get todo', async () => {
       const id = (await Todo.findOne({ title: dbTodos.first.title }))._id;
+      dbTodos.first.user = dbTodos.first.user.toString();
       
       return request(app)
         .get(`/v1/todos/${id}`)
@@ -246,6 +270,7 @@ describe('Todo API', async () => {
 
     it('should not update todo when no parameters were given', async () => {
       const id = (await Todo.findOne(dbTodos.first))._id;
+      dbTodos.first.user = dbTodos.first.user.toString();
 
       return request(app)
         .patch(`/v1/todos/${id}`)

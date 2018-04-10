@@ -28,16 +28,21 @@ router
    * @apiDescription Create a new todo
    * @apiGroup Todo
    * 
+   * @apiParam {String} user The author user's ID
    * @apiParam {String} title The task title
-   * @apiParam {String} description The task description, or other notes related to the task
+   * @apiParam {String} [description] The task description, or other notes related to the task
+   * @apiParam {Boolean} [completed] Marks the task as completed
    * @apiParam {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} user The author user's ID
    * @apiSuccess {String} title The task title
-   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {String} [description] The task description, or other notes related to the task
+   * @apiSuccess {Boolean} [completed] Marks the task as completed
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
+   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
   .post(validate(rules.create), controller.create);
 
@@ -49,11 +54,14 @@ router
    * @apiGroup Todo
    * 
    * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} user The author user's ID
    * @apiSuccess {String} title The task title
-   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {String} [description] The task description, or other notes related to the task
+   * @apiSuccess {Boolean} [completed] Marks the task as completed
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiError (Not Found 404) NotFound Todo does not exist
+   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
   .get(controller.get)
   /**
@@ -61,16 +69,21 @@ router
    * @apiDescription Replace the entire todo document with a new one
    * @apiGroup Todo
    * 
+   * @apiParam {String} user The author user's ID
    * @apiParam {String} title The task title
-   * @apiParam {String} description The task description, or other notes related to the task
+   * @apiParam {String} [description] The task description, or other notes related to the task
+   * @apiParam {Boolean} [completed] Marks the task as completed
    * @apiParam {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} user The author user's ID
    * @apiSuccess {String} title The task title
-   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {String} [description] The task description, or other notes related to the task
+   * @apiSuccess {Boolean} [completed] Marks the task as completed
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
+   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound Todo does not exist
    */
   .put(validate(rules.replace), controller.replace)
@@ -79,16 +92,21 @@ router
    * @apiDescription Update the todo
    * @apiGroup Todo
    * 
+   * @apiParam {String} [user] The author user's ID
    * @apiParam {String} [title] The task title
    * @apiParam {String} [description] The task description, or other notes related to the task
+   * @apiParam {Boolean} [completed] Marks the task as completed
    * @apiParam {Date} [dueAt] The timestamp by which the task must be completed
    * 
    * @apiSuccess {String} id The task ID
+   * @apiSuccess {String} user The author user's ID
    * @apiSuccess {String} title The task title
-   * @apiSuccess {String} description The task description, or other notes related to the task
+   * @apiSuccess {String} [description] The task description, or other notes related to the task
+   * @apiSuccess {Boolean} [completed] Marks the task as completed
    * @apiSuccess {Date} dueAt The timestamp by which the task must be completed
    * 
    * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
+   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound User does not exist
    */
   .patch(validate(rules.update), controller.update)
@@ -100,6 +118,7 @@ router
    * @apiSuccess (No Content 204) Successfully deleted
    * 
    * @apiError (Not Found 404) NotFound Todo does not exist
+   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
   .delete(controller.remove);
 
