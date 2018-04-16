@@ -2,6 +2,7 @@ import express from 'express';
 import validate from 'express-validation';
 import * as controller from '../../controllers/todo.controller';
 import * as rules from '../../validations/todo.validation';
+import { authorize, ADMIN, LOGGED_USER } from '../../middlewares/auth';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router
    *
    * @apiSuccess {Object[]} todos List of todos.
    */
-  .get(validate(rules.list), controller.list)
+  .get(authorize(), validate(rules.list), controller.list)
   /**
    * @api {post} /todos Create Todo
    * @apiDescription Create a new todo
@@ -44,7 +45,7 @@ router
    * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .post(validate(rules.create), controller.create);
+  .post(authorize(), validate(rules.create), controller.create);
 
 router
   .route('/:id')
@@ -63,7 +64,7 @@ router
    * @apiError (Not Found 404) NotFound Todo does not exist
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(controller.get)
+  .get(authorize(), controller.get)
   /**
    * @api {put} /:id Replace Todo
    * @apiDescription Replace the entire todo document with a new one
@@ -86,7 +87,7 @@ router
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound Todo does not exist
    */
-  .put(validate(rules.replace), controller.replace)
+  .put(authorize(), validate(rules.replace), controller.replace)
   /**
    * @api {patch} /:id Update Todo
    * @apiDescription Update the todo
@@ -109,7 +110,7 @@ router
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound User does not exist
    */
-  .patch(validate(rules.update), controller.update)
+  .patch(authorize(), validate(rules.update), controller.update)
   /**
    * @api {delete} /:id Delete Todo
    * @apiDescription Delete a todo
@@ -120,7 +121,7 @@ router
    * @apiError (Not Found 404) NotFound Todo does not exist
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .delete(controller.remove);
+  .delete(authorize(), controller.remove);
 
 
 export default router;

@@ -241,7 +241,7 @@ describe('Authentication API', () => {
   });
 
   describe('POST /v1/auth/refresh-token', () => {
-    it('should return a new accessToken when refreshToken and email match', async() => {
+    it('should return a new accessToken when refreshToken and email match', async () => {
       await RefreshToken.create(refreshToken);
       return request(app)
         .post('/v1/auth/refresh-token')

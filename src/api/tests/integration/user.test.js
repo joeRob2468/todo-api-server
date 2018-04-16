@@ -36,7 +36,7 @@ describe('Users API', async () => {
   let admin;
 
   const password = '1234567';
-  const passwordHashed = await bcrypt.hash(password, 1);
+  const passwordHashed = '$2a$04$j42cQE.9YnEVoixd7JE9y.pHq2qV2EF.ilbn4Bq1ZuYJQ48A3R6nG';
 
   beforeEach(async () => {
     dbUsers = {

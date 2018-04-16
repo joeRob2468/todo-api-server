@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import app from '../../../index';
 import Todo from '../../models/todo.model';
 import User from '../../models/user.model';
+import RefreshToken from '../../models/refreshToken.model';
 
 /**
  * root level hooks
@@ -32,7 +33,7 @@ describe('Todo API', async () => {
   let adminAccessToken;
 
   const password = '1234567';
-  const passwordHashed = await bcrypt.hash(password, 1);
+  const passwordHashed = '$2a$04$j42cQE.9YnEVoixd7JE9y.pHq2qV2EF.ilbn4Bq1ZuYJQ48A3R6nG';
 
   let dbTodos;
   let todo;
@@ -73,14 +74,11 @@ describe('Todo API', async () => {
       description: 'Make them easy',
       dueAt: dueAt
     };
-
     await User.remove({});
     await User.insertMany([user, admin]);
 
     user.password = password;
     admin.password = password;
-    userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
-    adminAccessToken = (await User.findAndGenerateToken(admin)).accessToken;
 
     dbTodos.first.user = (await User.findOne({ email: user.email }))._id;
     dbTodos.second.user = (await User.findOne({ email: admin.email }))._id;
@@ -88,13 +86,17 @@ describe('Todo API', async () => {
 
     await Todo.remove({});
     await Todo.insertMany([dbTodos.first, dbTodos.second]);
+
+    userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
+    adminAccessToken = (await User.findAndGenerateToken(admin)).accessToken;
   });
 
   describe('POST /v1/todos', () => {
     it('should create a new todo when request is ok', async () => {
-      
+
       return request(app)
         .post('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.CREATED)
         .then((res) => {
@@ -107,6 +109,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .post('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
@@ -122,6 +125,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .post('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
@@ -137,6 +141,7 @@ describe('Todo API', async () => {
     it('should get all todos', () => {
       return request(app)
         .get('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.OK)
         .then(async (res) => {
           // get todos from database (so we have IDs)
@@ -156,6 +161,7 @@ describe('Todo API', async () => {
     it('should get all todos with pagination', () => {
       return request(app)
         .get('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .query({ page: 2, perPage: 1 })
         .expect(httpStatus.OK)
         .then(async (res) => {
@@ -167,6 +173,7 @@ describe('Todo API', async () => {
     it('should report error when pagination\'s parameters are not a number', () => {
       return request(app)
         .get('/v1/todos')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .query({page: '?', perPage: 'notANumber'})
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
@@ -185,6 +192,7 @@ describe('Todo API', async () => {
       
       return request(app)
         .get(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.OK)
         .then((res) => {
           expect(res.body).to.include(dbTodos.first);
@@ -194,6 +202,7 @@ describe('Todo API', async () => {
     it('should report error when todo does not exist', () => {
       return request(app)
         .get(`/v1/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.NOT_FOUND)
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
@@ -204,6 +213,7 @@ describe('Todo API', async () => {
     it('should report error when id is not a valid ObjectID', () => {
       return request(app)
         .get('/v1/todos/invalidid')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.NOT_FOUND)
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
@@ -218,6 +228,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .put(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.OK)
         .then((res) => {
@@ -231,6 +242,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .put(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
@@ -244,6 +256,7 @@ describe('Todo API', async () => {
     it('should report error "Todo does not exist" when todo does not exist', async () => {
       return request(app)
         .put(`/v1/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(todo)
         .expect(httpStatus.NOT_FOUND)
         .then((res) => {
@@ -260,6 +273,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .patch(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({ description })
         .expect(httpStatus.OK)
         .then((res) => {
@@ -274,6 +288,7 @@ describe('Todo API', async () => {
 
       return request(app)
         .patch(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send()
         .expect(httpStatus.OK)
         .then((res) => {
@@ -284,6 +299,7 @@ describe('Todo API', async () => {
     it('should report error "Todo does not exist" when todo does not exist', () => {
       return request(app)
         .patch(`/v1/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.NOT_FOUND)
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
@@ -293,11 +309,12 @@ describe('Todo API', async () => {
   });
 
   describe('DELETE /v1/todos/:id', () => {
-    it('should delete todo', async() => {
+    it('should delete todo', async () => {
       const id = (await Todo.findOne(dbTodos.first))._id;
 
       return request(app)
         .delete(`/v1/todos/${id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.NO_CONTENT)
         .then(async () => {
           const todos = await Todo.find({});
@@ -308,6 +325,7 @@ describe('Todo API', async () => {
     it('should report error "Todo does not exist" when todo does not exist', () => {
       return request(app)
         .delete(`/v1/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(httpStatus.NOT_FOUND)
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
