@@ -4,7 +4,7 @@ import * as controller from '../../controllers/todo.controller';
 import * as rules from '../../validations/todo.validation';
 import { authorize, ADMIN, LOGGED_USER } from '../../middlewares/auth';
 
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 /**
  * Load user when API with todoId route parameter is hit
@@ -23,7 +23,7 @@ router
    *
    * @apiSuccess {Object[]} todos List of todos.
    */
-  .get(authorize(), validate(rules.list), controller.list)
+  .get(authorize(LOGGED_USER), validate(rules.list), controller.list)
   /**
    * @api {post} /todos Create Todo
    * @apiDescription Create a new todo
@@ -45,7 +45,7 @@ router
    * @apiError (Bad Request 400) ValidationError Some parameters may contain invalid values
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .post(authorize(), validate(rules.create), controller.create);
+  .post(authorize(LOGGED_USER), validate(rules.create), controller.create);
 
 router
   .route('/:id')
@@ -64,7 +64,7 @@ router
    * @apiError (Not Found 404) NotFound Todo does not exist
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(authorize(), controller.get)
+  .get(authorize(LOGGED_USER), controller.get)
   /**
    * @api {put} /:id Replace Todo
    * @apiDescription Replace the entire todo document with a new one
@@ -87,7 +87,7 @@ router
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound Todo does not exist
    */
-  .put(authorize(), validate(rules.replace), controller.replace)
+  .put(authorize(LOGGED_USER), validate(rules.replace), controller.replace)
   /**
    * @api {patch} /:id Update Todo
    * @apiDescription Update the todo
@@ -110,7 +110,7 @@ router
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    * @apiError (Not Found 404) NotFound User does not exist
    */
-  .patch(authorize(), validate(rules.update), controller.update)
+  .patch(authorize(LOGGED_USER), validate(rules.update), controller.update)
   /**
    * @api {delete} /:id Delete Todo
    * @apiDescription Delete a todo
@@ -121,7 +121,7 @@ router
    * @apiError (Not Found 404) NotFound Todo does not exist
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .delete(authorize(), controller.remove);
+  .delete(authorize(LOGGED_USER), controller.remove);
 
 
 export default router;

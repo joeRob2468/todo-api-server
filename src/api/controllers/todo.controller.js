@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import Todo from '../models/todo.model';
+import User from '../models/user.model';
 
 /** 
  * Create a new todo
@@ -7,6 +8,7 @@ import Todo from '../models/todo.model';
  */
 export const create = async (req, res, next) => {
   try {
+    req.body.user = req.params.userId;
     const todo = new Todo(req.body);
     const savedUser = await todo.save();
     res.status(httpStatus.CREATED);
@@ -22,7 +24,7 @@ export const create = async (req, res, next) => {
  */
 export const get = async (req, res, next) => {
   try {
-    const todo = await Todo.get(req.params.id);
+    const todo = await Todo.get(req.params.userId, req.params.id);
     res.json(todo.transform());
   } catch (error) {
     next(error);
@@ -35,12 +37,13 @@ export const get = async (req, res, next) => {
  */
 export const replace = async (req, res, next) => {
   try {
-    const todo = await Todo.get(req.params.id);
+    const todo = await Todo.get(req.params.userId, req.params.id);
     
     // remove _id and assign the new object to newTodo.
     // technically, it creates a new variable called _id, but we won't use that.
     // this is an es6 replacement for lodash's omit.
     const {_id, ...newTodo} = req.body;
+    newTodo.user = req.params.userId;
 
     await todo.update(newTodo, {override: true, upsert: true});
     const savedTodo = await Todo.findById(todo._id);
@@ -57,8 +60,9 @@ export const replace = async (req, res, next) => {
  */
 export const update = async (req, res, next) => {
   try {
-    const todo = await Todo.get(req.params.id);
+    const todo = await Todo.get(req.params.userId, req.params.id);
     const updatedTodo = Object.assign(todo, req.body);
+    updatedTodo.user = req.params.userId;
 
     await updatedTodo.save();
     res.json(updatedTodo.transform());
@@ -73,6 +77,7 @@ export const update = async (req, res, next) => {
  */
 export const list = async (req, res, next) => {
   try {
+    req.query.user = req.params.userId;
     const todos = await Todo.list(req.query);
     const transformedTodos = todos.map(todo => todo.transform());
     res.json(transformedTodos);
@@ -87,7 +92,7 @@ export const list = async (req, res, next) => {
   */
 export const remove = async (req, res, next) => {
   try {
-    const todo = await Todo.get(req.params.id);
+    const todo = await Todo.get(req.params.userId, req.params.id);
     await todo.remove();
     res.status(httpStatus.NO_CONTENT).end();
   } catch (error) {

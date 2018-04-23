@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import APIError from '../utils/APIError';
+import User from './user.model';
 
 /** 
  * Todo Schema
@@ -38,6 +39,31 @@ const todoSchema = new mongoose.Schema({
  * - virtuals
  */
 
+ todoSchema.pre('save', async function save(next) {
+  try {
+    if (!this.isModified('user')) return next();
+
+    try {
+      let user;
+
+      if (mongoose.Types.ObjectId.isValid(this.user)) {
+        user = await User.findById(this.user).exec();
+      }
+      if (!user) {
+        throw new APIError({
+          message: 'User does not exist',
+          status: httpStatus.NOT_FOUND
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
  /**
  * Methods
  */
@@ -49,14 +75,12 @@ todoSchema.method({
    */
   transform() {
     const transformed = {};
-    const fields = ['id', 'user', 'title', 'description', 'completed', 'dueAt'];
+    const fields = ['_id', 'user', 'title', 'description', 'completed', 'dueAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
-
-    transformed.user = transformed.user.toString();
-
+    
     return transformed;
   }
 });
@@ -71,12 +95,25 @@ todoSchema.statics = {
    * @param {ObjectID} id - the objectID of todo
    * @returns {Promise<Todo, Error>}
    */
-  async get(id) {
+  async get(userId, id) {
     try {
       let todo;
+      let user;
+
+      if (mongoose.Types.ObjectId.isValid(userId)) {
+        user = await User.findById(userId).exec();
+      }
 
       if (mongoose.Types.ObjectId.isValid(id)) {
         todo = await this.findById(id).exec();
+      }
+
+      if (!user)
+      {
+        throw new APIError({
+          message: 'User does not exist',
+          status: httpStatus.NOT_FOUND
+        });
       }
       
       if (todo) {
@@ -97,12 +134,18 @@ todoSchema.statics = {
    * 
    * @param {number} skip - Number of todos to be skipped.
    * @param {number} limit - Limit number of todos to be returned.
+   * @param {String} [title] - The title to filter by
+   * @param {String} [description] - The description to filter by
    * @returns {Promise<Todo[]>}
    */
-  list({ page = 1, perPage = 500 /*, name, email, role */}) {
-    // const options = omitBy({ name, email, role }, isNil);
-    // limit by those fields. Requires lodash.
-    return this.find(/* options */)
+  list({ page = 1, perPage = 500, user, title, description}) {
+    const options = { title, description, user };
+    // remove undefined properties from options
+    Object.keys(options).forEach((key) => {
+      if (options[key] === null || options[key] === undefined) delete options[key];
+    });
+
+    return this.find(options)
       .sort({dueAt: -1})
       .skip(perPage * (page - 1))
       .limit(perPage)
