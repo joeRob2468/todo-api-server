@@ -69,7 +69,6 @@ describe('Todo API', async () => {
     };
 
     todo = {
-      user: '',
       title: 'Write Tests',
       description: 'Make them easy',
       dueAt: dueAt
@@ -82,7 +81,6 @@ describe('Todo API', async () => {
 
     dbTodos.first.user = (await User.findOne({ email: user.email }))._id;
     dbTodos.second.user = (await User.findOne({ email: admin.email }))._id;
-    todo.user = (await User.findOne({ email: user.email }))._id.toString();
 
     await Todo.remove({});
     await Todo.insertMany([dbTodos.first, dbTodos.second]);
@@ -93,8 +91,7 @@ describe('Todo API', async () => {
 
   describe('POST /v1/todos', () => {
     it('should create a new todo when request is ok', async () => {
-
-      const userId = (await User.findOne({ email: user.email }))._id;
+      const userId = (await User.findOne({email: user.email}))._id;
 
       return request(app)
         .post(`/v1/users/${userId}/todos`)
