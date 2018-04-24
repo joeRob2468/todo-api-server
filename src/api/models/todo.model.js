@@ -80,6 +80,10 @@ todoSchema.method({
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // convert ObjectIDs to string before sending
+    transformed._id = transformed._id.toString();
+    transformed.user = transformed.user.toString();
     
     return transformed;
   }
@@ -138,18 +142,33 @@ todoSchema.statics = {
    * @param {String} [description] - The description to filter by
    * @returns {Promise<Todo[]>}
    */
-  list({ page = 1, perPage = 500, user, title, description}) {
-    const options = { title, description, user };
-    // remove undefined properties from options
-    Object.keys(options).forEach((key) => {
-      if (options[key] === null || options[key] === undefined) delete options[key];
-    });
+  async list({ page = 1, perPage = 500, user, title, description}) {
+    try {
+      let dbUser;
+      if (mongoose.Types.ObjectId.isValid(user)) {
+        dbUser = await User.findById(user).exec();
+      }
+      if (!dbUser) {
+        throw new APIError({
+          message: 'User does not exist',
+          status: httpStatus.NOT_FOUND
+        });
+      }
 
-    return this.find(options)
-      .sort({dueAt: -1})
-      .skip(perPage * (page - 1))
-      .limit(perPage)
-      .exec();  
+      const options = { title, description, user };
+      // remove undefined properties from options
+      Object.keys(options).forEach((key) => {
+        if (options[key] === null || options[key] === undefined) delete options[key];
+      });
+
+      return this.find(options)
+        .sort({dueAt: -1})
+        .skip(perPage * (page - 1))
+        .limit(perPage)
+        .exec();
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
