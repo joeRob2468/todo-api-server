@@ -148,6 +148,20 @@ describe('Todo API', async () => {
           expect(res.body.message).to.be.equal('User does not exist');
         });
     });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .post(`/v1/users/${mongoose.Types.ObjectId()}/todos`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(todo)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
+        });
+    });
   });
 
   describe('GET /v1/users/:userId/todos', () => {
@@ -216,6 +230,20 @@ describe('Todo API', async () => {
           expect(res.body.message).to.be.equal('User does not exist');
         });
     });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .get(`/v1/users/${userId}/todos`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(todo)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
+        });
+    });
   });
 
   describe('GET /v1/users/:userId/todos/:id', () => {
@@ -268,6 +296,19 @@ describe('Todo API', async () => {
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
           expect(res.body.message).to.be.equal('Todo does not exist');
+        });
+    });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .get(`/v1/users/${userId}/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
         });
     });
   });
@@ -330,6 +371,20 @@ describe('Todo API', async () => {
           expect(res.body.message).to.be.equal('User does not exist');
         });
     });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .put(`/v1/users/${userId}/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(todo)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
+        });
+    });
   });
 
   describe('PATCH /v1/users/:userId/todos/:id', () => {
@@ -388,6 +443,20 @@ describe('Todo API', async () => {
           expect(res.body.message).to.be.equal('User does not exist');
         });
     });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .patch(`/v1/users/${userId}/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(todo)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
+        });
+    });
   });
 
   describe('DELETE /v1/users/:userId/todos/:id', () => {
@@ -427,6 +496,19 @@ describe('Todo API', async () => {
         .then((res) => {
           expect(res.body.code).to.be.equal(404);
           expect(res.body.message).to.be.equal('User does not exist');
+        });
+    });
+
+    it('should report error "Forbidden" when user is not authorized to access resource', async () => {
+      const userId = (await User.findOne({ email: admin.email }))._id;
+
+      return request(app)
+        .delete(`/v1/users/${userId}/todos/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden');
         });
     });
   });
